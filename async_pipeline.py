@@ -20,6 +20,8 @@ from manzuo_crawl import ManzuoCrawler
 from manzuo_parse import ManzuoParser
 from wuba_crawl import WubaCrawler
 from wuba_parse import WubaParser
+from archiver import Archiver
+from check_config import CheckConfig
 
 import tornado.ioloop
 import tornado.httpclient
@@ -67,11 +69,11 @@ def log_result(source):
 	filename = "_".join(filename)
 	filepath = os.path.join(log_folder_name, filename)
 
-	logging.basicConfig(filename=filepath, level=logging.DEBUG, filemode="a", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+	logging.basicConfig(filename=filepath, level=logging.INFO, filemode="a", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 	if source in error_cities:
 		for i in xrange(0, len(error_cities[source])):
 			log_string = "Error:\t" + error_cities[source][i]
-			log_string = log_string + "\t" + error_messages[source][i]
+			log_string = log_string + "\t" + str(error_messages[source][i])
 			logging.info(log_string)
 	else:
 		logging.info("SUCCESS")
@@ -92,7 +94,6 @@ def _handle_response(data, response):
 	source = data["source"]
 	city = data["city"]
 	if response.error:
-	#	if "Timeout" in str(response.error):  # only retry the timeout sites
 		if source in error_cities:
 			error_cities[source].append(city)
 		else:
@@ -188,14 +189,18 @@ class AsyncPipeline:
 		report_errors()
 
 # Usage: python async_pipeline.py -s "meituan"
+# Usage: python async_pipeline.py -s "meituan" -c "beijing,tianjin"
+# Usage: python async_pipeline.py -s "meituan" -r "4"  run it every 4 hours
 if __name__ == "__main__":
-	options, arg = getopt.getopt(sys.argv[1:], "s:c:", ["source=", "citylist="])
+	options, arg = getopt.getopt(sys.argv[1:], "s:c:r:", ["source=", "citylist=", "repeat="])
 	source = None
 	citylist = None
+	period = None
 
 	for opt in options:
 		if opt[0] == "-s": source = opt[1]
 		elif opt[0] == "-c": citylist = opt[1]
+		elif opt[0] == "-r": period = opt[1]
 
 	if source:
 		source = source.split(",")
@@ -204,21 +209,48 @@ if __name__ == "__main__":
 		citylist = citylist.split(",")
 		print "city list: ", citylist
 
-	if source:
-		app = AsyncPipeline()
-		app.start(source, citylist)
-
-	# rescue
-	if  len(error_cities) > 0:
-		for source in error_cities.iterkeys():
-			print "Try to rescue", source
-			remain_cities = error_cities[source]
-			error_cities[source] = []
-			error_messages[source] = []
+	while True:
+		if source:
 			app = AsyncPipeline()
-			app.start([source], remain_cities)
+			app.start(source, citylist)
+		else:
+			break
 
+		# rescue
+		if  len(error_cities) > 0:
+			for src in error_cities.iterkeys():
+				print "Try to rescue", src
+				remain_cities = error_cities[src]
+				error_cities[src] = []
+				error_messages[src] = []
+				app = AsyncPipeline()
+				app.start([src], remain_cities)
 
+		# archive first
+		archiver = Archiver()
+		for src in source:
+			archiver.archive(src, src, True)  # False achive locally, True achive to S3
+
+		# repeat
+		if not period: break
+		time.sleep( int(period) * 3600 )
+
+		error_cities = {}
+		error_messages = {}
+
+		# check config
+		stop_crawl = 0
+		check_config = CheckConfig()
+		config = check_config.check('crawl_config')
+		for src in source:
+			if src in config:
+				if "period" in config[src]:
+					period = config[src]["period"]
+				if "stop" in config[src]:
+					stop_crawl = config[src]["stop"]
+				break
+		if stop_crawl == 1:
+			break
 
 
 

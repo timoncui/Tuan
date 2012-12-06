@@ -23,6 +23,7 @@ from wuba_parse import WubaParser
 
 from carrier import Carrier
 from archiver import Archiver
+from check_config import CheckConfig
 
 import os
 import sys
@@ -49,11 +50,11 @@ class Pipeline:
 		filename = "_".join(filename)
 		filepath = os.path.join(log_folder_name, filename)
 
-		logging.basicConfig(filename=filepath, level=logging.DEBUG, filemode="a", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+		logging.basicConfig(filename=filepath, level=logging.INFO, filemode="a", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 		if len(error_cities) > 0:
 			for i in xrange(0, len(error_cities)):
 				log_string = "Error:\t" + error_cities[i]
-				log_string = log_string + "\t" + error_messages[i]
+				log_string = log_string + "\t" + str(error_messages[i])
 				logging.info(log_string)
 		else:
 			logging.info("SUCCESS")
@@ -145,13 +146,16 @@ class Pipeline:
 
 # Usage: python pipeline.py -s "meituan,dida,wowo"
 # Usage: python pipeline.py -s "meituan" -c "beijing,shanghai"
+# Usage: python pipeline.py -s "meituan" -r "4"  run it every 4 hours
 if __name__ == "__main__":
-	options, arg = getopt.getopt(sys.argv[1:], "s:c:", ["source=", "citylist="])
+	options, arg = getopt.getopt(sys.argv[1:], "s:c:r:", ["source=", "citylist=", "repeat="])
 	source   = None
 	citylist = None
+	period   = None
 	for opt in options:
 		if opt[0] == "-s": source = opt[1]
 		elif opt[0] == "-c": citylist = opt[1]
+		elif opt[0] == "-r": period = opt[1]
 
 	if  source:
 		source = source.split(",")
@@ -160,81 +164,104 @@ if __name__ == "__main__":
 		citylist = citylist.split(",")
 		print "city list: ", citylist
 
-	sleep_interval = (0,10)
-	if "meituan" in source:
-		meituan_app = Pipeline(MeituanCrawler(), MeituanParser(), None, "meituan")
-		if not citylist:
-			error = meituan_app.start(sleep_interval)
-			if len(error) > 0:
-				meituan_app.rescue(error, sleep_interval)
-		else:
-			meituan_app.rescue(citylist, sleep_interval)
-	if "nuomi" in source:
-		nuomi_app = Pipeline(NuomiCrawler(), NuomiParser(), None, "nuomi")
-		if not citylist:
-			error = nuomi_app.start(sleep_interval)
-			if len(error) > 0:
-				nuomi_app.rescue(error, sleep_interval)
-		else:
-			nuomi_app.rescue(citylist, sleep_interval)
-	if "lashou" in source:
-		lashou_app = Pipeline(LashouCrawler(), LashouParser(), None, "lashou")
-		if not citylist:
-			error = lashou_app.start(sleep_interval)
-			if len(error) > 0:
-				lashou_app.rescue(error, sleep_interval)
-		else:
-			lashou_app.rescue(citylist, sleep_interval)
-	if "wowo" in source:
-		wowo_app = Pipeline(WowoCrawler(), WowoParser(), None, "wowo")
-		if not citylist:
-			error = wowo_app.start(sleep_interval)
-			if len(error) > 0:
-				wowo_app.rescue(error, sleep_interval)
-		else:
-			wowo_app.rescue(citylist, sleep_interval)
-	if "dida" in source:
-		dida_app = Pipeline(DidaCrawler(), DidaParser(), None, "dida")
-		if not citylist:
-			error = dida_app.start(sleep_interval)
-			if len(error) > 0:
-				dida_app.rescue(error, sleep_interval)
-		else:
-			dida_app.rescue(citylist, sleep_interval)
-	if "dianping" in source:
-		dianping_app = Pipeline(DianpingCrawler(), DianpingParser(), None, "dianping")
-		if not citylist:
-			error = dianping_app.start(sleep_interval)
-			if len(error) > 0:
-				dianping_app.rescue(error, sleep_interval)
-		else:
-			dianping_app.rescue(citylist, sleep_interval)
-	if "manzuo" in source:
-		manzuo_app = Pipeline(ManzuoCrawler(), ManzuoParser(), None, "manzuo")
-		if not citylist:
-			error = manzuo_app.start(sleep_interval)
-			if len(error) > 0:
-				manzuo_app.rescue(error, sleep_interval)
-		else:
-			manzuo_app.rescue(citylist, sleep_interval)
-	if "ftuan" in source:
-		ftuan_app = Pipeline(FtuanCrawler(), FtuanParser(), None, "ftuan")
-		if not citylist:
-			error = ftuan_app.start(sleep_interval)
-			if len(error) > 0:
-				ftuan_app.rescue(error, sleep_interval)
-		else:
-			ftuan_app.rescue(citylist, sleep_interval)
-	if "wuba" in source:
-		wuba_app = Pipeline(WubaCrawler(), WubaParser(), None, "wuba")
-		if not citylist:
-			error = wuba_app.start(sleep_interval)
-			if len(error) > 0:
-				wuba_app.rescue(error, sleep_interval)
-		else:
-			wuba_app.rescue(citylist, sleep_interval)
+	while True:
+		if not source: break
+		sleep_interval = (0,30)
+		if "meituan" in source:
+			meituan_app = Pipeline(MeituanCrawler(), MeituanParser(), None, "meituan")
+			if not citylist:
+				error = meituan_app.start(sleep_interval)
+				if len(error) > 0:
+					meituan_app.rescue(error, sleep_interval)
+			else:
+				meituan_app.rescue(citylist, sleep_interval)
+		if "nuomi" in source:
+			nuomi_app = Pipeline(NuomiCrawler(), NuomiParser(), None, "nuomi")
+			if not citylist:
+				error = nuomi_app.start(sleep_interval)
+				if len(error) > 0:
+					nuomi_app.rescue(error, sleep_interval)
+			else:
+				nuomi_app.rescue(citylist, sleep_interval)
+		if "lashou" in source:
+			lashou_app = Pipeline(LashouCrawler(), LashouParser(), None, "lashou")
+			if not citylist:
+				error = lashou_app.start(sleep_interval)
+				if len(error) > 0:
+					lashou_app.rescue(error, sleep_interval)
+			else:
+				lashou_app.rescue(citylist, sleep_interval)
+		if "wowo" in source:
+			wowo_app = Pipeline(WowoCrawler(), WowoParser(), None, "wowo")
+			if not citylist:
+				error = wowo_app.start(sleep_interval)
+				if len(error) > 0:
+					wowo_app.rescue(error, sleep_interval)
+			else:
+				wowo_app.rescue(citylist, sleep_interval)
+		if "dida" in source:
+			dida_app = Pipeline(DidaCrawler(), DidaParser(), None, "dida")
+			if not citylist:
+				error = dida_app.start(sleep_interval)
+				if len(error) > 0:
+					dida_app.rescue(error, sleep_interval)
+			else:
+				dida_app.rescue(citylist, sleep_interval)
+		if "dianping" in source:
+			dianping_app = Pipeline(DianpingCrawler(), DianpingParser(), None, "dianping")
+			if not citylist:
+				error = dianping_app.start(sleep_interval)
+				if len(error) > 0:
+					dianping_app.rescue(error, sleep_interval)
+			else:
+				dianping_app.rescue(citylist, sleep_interval)
+		if "manzuo" in source:
+			manzuo_app = Pipeline(ManzuoCrawler(), ManzuoParser(), None, "manzuo")
+			if not citylist:
+				error = manzuo_app.start(sleep_interval)
+				if len(error) > 0:
+					manzuo_app.rescue(error, sleep_interval)
+			else:
+				manzuo_app.rescue(citylist, sleep_interval)
+		if "ftuan" in source:
+			ftuan_app = Pipeline(FtuanCrawler(), FtuanParser(), None, "ftuan")
+			if not citylist:
+				error = ftuan_app.start(sleep_interval)
+				if len(error) > 0:
+					ftuan_app.rescue(error, sleep_interval)
+			else:
+				ftuan_app.rescue(citylist, sleep_interval)
+		if "wuba" in source:
+			wuba_app = Pipeline(WubaCrawler(), WubaParser(), None, "wuba")
+			if not citylist:
+				error = wuba_app.start(sleep_interval)
+				if len(error) > 0:
+					wuba_app.rescue(error, sleep_interval)
+			else:
+				wuba_app.rescue(citylist, sleep_interval)
 
+		# archive first
+		archiver = Archiver()
+		for src in source:
+			archiver.archive(src, src)
 
+		# repeat
+		if not period: break
+		time.sleep( int(period) * 3600 )
+
+		# check config file
+		stop_crawl = 0
+		check_config = CheckConfig()
+		config = check_config.check('crawl_config')
+		for src in source:
+			if src in config:
+				if "period" in config[src]:
+					period = config[src]["period"]
+				if "stop" in config[src]:
+					stop_crawl = config[src]["stop"]
+				break
+		if stop_crawl == 1:
+			break
 
 
 
