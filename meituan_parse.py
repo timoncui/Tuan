@@ -6,7 +6,6 @@ import os
 import json
 import datetime
 import xml.etree.ElementTree as ET
-from carrier import Carrier
 
 def convert_to_date(t):
 	return datetime.datetime(1970, 1, 1, 0, 0, 0) + datetime.timedelta(seconds=t)
