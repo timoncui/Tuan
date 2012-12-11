@@ -4,7 +4,6 @@
 
 import os
 import json
-import msgpack
 import datetime
 import xml.etree.ElementTree as ET
 
