@@ -1,0 +1,74 @@
+<html>
+
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ static_url("monitor.js") }}"></script>
+	<style>
+		body {
+			font-family:"Abadi MT W02 Exra Light","HelveticaNeueW01-45Ligh","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
+		}
+		.panel {
+			border:1px solid #CCC;
+			height:300px;
+			margin:5 5 5 5;
+			float:left;
+			width:30%;
+			overflow:scroll;
+		}
+		center {
+			margin-bottom: 12px;
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+	<center><div style="font-size:25px;">Monitor</div></center>
+	<div>
+		<div>
+			<div class="panel" id="dida">
+				<center>didatuan.com</center>
+				<div></div>
+			</div>
+			<div class="panel" id="dianping">
+				<center>dianping.com</center>
+				<div></div>
+			</div>
+			<div class="panel" id="ftuan">
+				<center>ftuan.com</center>
+				<div></div>
+			</div>
+		</div>
+		<div>
+			<div class="panel" id="lashou">
+				<center>lashou.com</center>
+				<div></div>
+			</div>
+			<div class="panel" id="manzuo">
+				<center>manzuo.com</center>
+				<div></div>
+			</div>
+			<div class="panel" id="meituan">
+				<center>meituan.com</center>
+				<div></div>
+			</div>
+		</div>
+		<div>
+			<div class="panel" id="nuomi">
+				<center>nuomi.com</center>
+				<div></div>
+			</div>
+			<div class="panel" id="wowo">
+				<center>55tuan.com</center>
+				<div></div>
+			</div>
+			<div class="panel" id="wuba">
+				<center>t.58.com</center>
+				<div></div>
+			</div>
+		</div>
+	</div>
+	<div id="info" style="display:none;position:absolute;z-index:10;background-color:#47F584;padding:5 5 5 5;-webkit-border-radius:5"></div>
+</body>
+
+</html>
