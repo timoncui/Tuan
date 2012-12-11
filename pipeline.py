@@ -243,7 +243,7 @@ if __name__ == "__main__":
 		# archive first
 		archiver = Archiver()
 		for src in source:
-			archiver.archive(src, src)
+			archiver.archive(src, src, True)  # False achive locally, True achive to S3
 
 		# repeat
 		if not period: break
