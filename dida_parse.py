@@ -14,17 +14,17 @@ class DidaParser:
 	def parse(self, filepath):
 		del self.deals[:]
 		try:
-			city_name = filepath.strip().split("/")[-1]
+		#	city_name = filepath.strip().split("/")[-1]
 			tree = ET.parse(filepath)
 			root = tree.getroot()
 			for url in root.iter('url'):
 				dida_deal = dict()
-				
-				dida_deal["deal_city"] = city_name
+
 				dida_deal["deal_id"] = url.find('loc').text.strip().split("=")[1]
 				dida_deal["deal_url"] = url.find('loc').text
 
 				url = url.find('data').find('display')
+				dida_deal["deal_city"] = url.find('city').text
 				dida_deal["deal_title"] = url.find('title').text
 				dida_deal["deal_img"] = url.find('image').text
 				try:

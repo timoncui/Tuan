@@ -20,7 +20,8 @@ class WowoParser:
 			for deal in root.iter('deal'):
 				wowo_deal = dict()
 				wowo_deal["deal_id"] = deal.find('id').text
-				wowo_deal["deal_city"] = city_name
+			#	wowo_deal["deal_city"] = city_name
+				wowo_deal["deal_city"] = deal.find('division_name').text
 				wowo_deal["deal_title"] = deal.find('title').text
 				wowo_deal["deal_url"] = deal.find('deal_url').text
 				wowo_deal["deal_img"] = deal.find('large_image_url').text

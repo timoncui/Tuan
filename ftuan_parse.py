@@ -14,20 +14,20 @@ class FtuanParser:
 	def parse(self, filepath):
 		del self.deals[:]
 		try:
-			city_name = filepath.strip().split("/")[-1]
+		#	city_name = filepath.strip().split("/")[-1]
 			tree = ET.parse(filepath)
 			root = tree.getroot()
 			for url in root.iter('url'):
 				deal = url.find('data').find('display')
 
 				ftuan_deal = dict()
-				ftuan_deal["deal_city"] = city_name
 				ftuan_deal["deal_url"] = url.find('loc').text
 				deal_info = ftuan_deal["deal_url"].strip().split("/")[-1]
 				deal_info = deal_info.split(".")[0]
 				deal_info = deal_info.split("_")
 				ftuan_deal["deal_cate"] = deal_info[0]
 				ftuan_deal["deal_id"] = deal_info[-1]
+				ftuan_deal["deal_city"] = deal.find('city').text
 				ftuan_deal["deal_title"] = deal.find('title').text
 				ftuan_deal["deal_img"] = deal.find('image').text
 				try:

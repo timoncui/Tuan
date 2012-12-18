@@ -15,7 +15,6 @@ class NuomiParser:
 		del self.deals[:]
 		try:
 			feed_quality = 0
-			city_name = filepath.split('/')[-1]
 			tree = ET.parse(filepath)
 			root = tree.getroot()
 			for data in root.iter('url'):
@@ -26,8 +25,10 @@ class NuomiParser:
 				deal = deal.find('display')
 
 				nuomi_deal = dict()
+				city_name = deal.find('city').text
 				nuomi_deal["deal_city"] = city_name
-				nuomi_deal["deal_id"] = city_name + "_" + tokens[-1].split(".")[0]  # deal id = city_name + the last part of URL
+			#	nuomi_deal["deal_id"] = city_name + "_" + tokens[-1].split(".")[0]  # deal id = city_name + the last part of URL
+				nuomi_deal["deal_id"] = deal_url
 				nuomi_deal["deal_title"] = deal.find('title').text
 				nuomi_deal["deal_url"] = deal_url
 				nuomi_deal["deal_img"] = deal.find('image').text

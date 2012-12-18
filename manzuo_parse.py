@@ -13,7 +13,7 @@ class ManzuoParser:
 
 	def parse(self, filepath):
 		try:
-			city_name = filepath.strip().split("/")[-1]
+		#	city_name = filepath.strip().split("/")[-1]
 			tree = ET.parse(filepath)
 			root = tree.getroot()
 			for url in root.iter('url'):
@@ -26,6 +26,7 @@ class ManzuoParser:
 				manzuo_deal["deal_title"] = deal.find('title').text
 				manzuo_deal["deal_img"] = deal.find('image').text
 				manzuo_deal["deal_desc"] = deal.find('description').text
+				manzuo_deal["deal_city"] = deal.find('city').text
 				try:
 					manzuo_deal["start_time"] = long(deal.find('startTime').text)
 					manzuo_deal["end_time"] = long(deal.find('endTime').text)

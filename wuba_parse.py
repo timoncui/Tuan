@@ -24,6 +24,7 @@ class WubaParser:
 				wuba_deal["deal_id"] = deal.find('id').text
 				wuba_deal["deal_url"] = url.find('loc').text
 				wuba_deal["deal_title"] = deal.find('title').text
+				wuba_deal["deal_city"] = deal.find('city').text
 				try:
 					wuba_deal["deal_cate_id"] = int(deal.find('category').text)
 				except Exception, e:

@@ -64,7 +64,7 @@ pipeline_sources = []
 # source: where the deal comes from, e.g. meituan, nuomi, etc.
 def log_result(source):
 	log_folder_name = os.path.join("log", source)
-	LA_local_t = datetime.datetime.today()
+	LA_local_t = datetime.datetime.now()
 	filename = [str(LA_local_t.year), str(LA_local_t.month), str(LA_local_t.day)]
 	filename = "_".join(filename)
 	filepath = os.path.join(log_folder_name, filename)

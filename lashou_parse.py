@@ -14,19 +14,19 @@ class LashouParser:
 	def parse(self, filepath):
 		del self.deals[:]
 		try:
-			city_name = filepath.strip().split("/")[-1]
+		#	city_name = filepath.strip().split("/")[-1]
 			tree = ET.parse(filepath)
 			root = tree.getroot()
 			for url in root.iter('url'):
 				deal = url.find('data').find('display')
 
 				lashou_deal = dict()
-				lashou_deal["deal_city"] = city_name
 				lashou_deal["deal_id"] = deal.find('gid').text
 				lashou_deal["deal_cate"] = deal.find('cate').text
 				lashou_deal["deal_url"] = url.find('loc').text
 				lashou_deal["deal_title"] = deal.find('title').text
 				lashou_deal["deal_img"] = deal.find('image').text
+				lashou_deal["deal_city"] = deal.find('city').text
 				try:
 					lashou_deal["start_time"] = long(deal.find('startTime').text)
 					lashou_deal["end_time"] = long(deal.find('endTime').text)

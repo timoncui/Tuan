@@ -28,7 +28,7 @@ class MeituanParser:
 					deal = deal[0]
 
 					meituan_deal = dict()
-					meituan_deal["deal_city"] = filepath.strip().split("/")[1]
+					meituan_deal["deal_city"] = deal.find('city_name').text
 					meituan_deal["deal_id"] = deal.find('deal_id').text
 					meituan_deal["deal_title"] = deal.find('deal_title').text
 					meituan_deal["deal_url"] = deal.find('deal_url').text
