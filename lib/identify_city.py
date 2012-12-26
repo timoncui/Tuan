@@ -22,6 +22,29 @@ class CityIdentifier:
 			print "Fails to connect to mysql database", e
 			raise
 
+	# construct a full city list, combining lashou.com city list and cities not found in lashou, but appear in other sources
+	def construct_city_set(self, lashou_city_list, unlisted):
+		result = []
+		p = Pinyin()
+		tree = ET.parse(lashou_city_list)
+		root = tree.getroot()
+		for city in root.iter('city'):
+			city_name = city.find('name').text
+			result.append( [city_name, p.get_pinyin(city_name)] )
+
+		fhandler = open(unlisted, "r")
+		lines = fhandler.readlines()
+		fhandler.close()
+		for line in lines:
+			city_name = line.strip()
+			city_name = unicode( city_name, "utf-8" )
+			result.append( [city_name, p.get_pinyin(city_name)] )
+
+		city_index = 1
+		for city in result:
+			print city_index, "\t", city[0], "\t", city[1]
+			city_index = city_index + 1
+
 	# lashou.com has a comprehensive city list
 	def load(self, lashou_city_list):
 		result = []
@@ -44,8 +67,9 @@ class CityIdentifier:
 
 if __name__ == "__main__":
 	app = CityIdentifier()
-	cities = app.load("/Users/Lixing/Documents/projects/Tuan/lashou/city_list")
-	app.save_to_db("city", cities)
+#	cities = app.load("/Users/Lixing/Documents/projects/Tuan/lashou/city_list")
+#	app.save_to_db("city", cities)
+	app.construct_city_set("/Users/Lixing/Documents/projects/Tuan/lashou/city_list", "unlisted.txt")
 
 
 
