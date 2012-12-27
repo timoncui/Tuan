@@ -50,6 +50,18 @@ class DianpingParser:
 				except Exception, e:
 					print dianping_deal["deal_id"], "misses bought"
 					dianping_deal["sales_num"] = None
+
+				dianping_deal["deal_sold_at"] = []
+				shops = url.find('data').find('shops')
+				for shop in shops.iter('shop'):
+					dianping_shop = dict()
+					dianping_shop["shop_name"] = shop.find('name').text
+					dianping_shop["shop_tel"]  = shop.find('tel').text
+					dianping_shop["shop_addr"] = shop.find('addr').text
+					dianping_shop["shop_area"] = shop.find('area').text
+					dianping_shop["shop_trafficinfo"] = shop.find('trafficInfo').text
+					dianping_deal["deal_sold_at"].append(dianping_shop)
+
 				self.deals.append(dianping_deal)
 			print "deals number:", len(self.deals)
 		except Exception, e:

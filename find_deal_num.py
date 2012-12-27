@@ -27,6 +27,7 @@ class FindDealNum:
 		return deal_list
 
 	def find_deal_num(self, source):
+		print "prcessing", source
 		deal_set = set()
 
 		parser = None
@@ -47,28 +48,27 @@ class FindDealNum:
 			for deal in parser.deals:
 				deal_id = deal["deal_id"]
 				deal_set.add(deal_id)
-		print source, len(deal_set)
 		return len(deal_set)
 
 if __name__ == "__main__":
 	app = FindDealNum()
-	dp = app.find_deal_num("dianping")
-	dida = app.find_deal_num("dida")
-	ftuan = app.find_deal_num("ftuan")
-	lashou = app.find_deal_num("lashou")
-	manzuo = app.find_deal_num("manzuo")
-	meituan = app.find_deal_num("meituan")
-	nuomi = app.find_deal_num("nuomi")
-	wowo = app.find_deal_num("wowo")
-	wuba = app.find_deal_num("wuba")
-	print "dianping", dp
-	print "dida", dida
-	print "ftuan", ftuan
-	print "lashou", lashou
-	print "manzuo", manzuo
-	print "meituan", meituan
-	print "nuomi", nuomi
-	print "wowo", wowo
-	print "wuba", wuba
+	dianping = app.find_deal_num("dianping")
+#	dida = app.find_deal_num("dida")
+#	ftuan = app.find_deal_num("ftuan")
+#	lashou = app.find_deal_num("lashou")
+#	manzuo = app.find_deal_num("manzuo")
+#	meituan = app.find_deal_num("meituan")
+#	nuomi = app.find_deal_num("nuomi")
+#	wowo = app.find_deal_num("wowo")
+#	wuba = app.find_deal_num("wuba")
+	print "dianping", dianping
+#	print "dida", dida
+#	print "ftuan", ftuan
+#	print "lashou", lashou
+#	print "manzuo", manzuo
+#	print "meituan", meituan
+#	print "nuomi", nuomi
+#	print "wowo", wowo
+#	print "wuba", wuba
 
 
