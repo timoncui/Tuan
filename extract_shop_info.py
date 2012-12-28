@@ -140,7 +140,11 @@ class ShopExtractor:
 if __name__ == "__main__":
 	app = ShopExtractor()
 #	app.extract("dianping", "shop/dianping_1")
-	app.extract("meituan", "shop/meituan_1")
+#	app.extract("meituan", "shop/meituan_1")
+#	app.extract("dida", "shop/dida_1")
+#	app.extract("lashou", "shop/lashou_1")
+#	app.extract("nuomi", "shop/nuomi_1")
+#	app.extract("wowo", "shop/wowo_1")
 
 
 
