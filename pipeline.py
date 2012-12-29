@@ -143,24 +143,14 @@ class Pipeline:
 
 		return error_files
 
-
-# Usage: python pipeline.py -s "meituan,dida,wowo"
-# Usage: python pipeline.py -s "meituan" -c "beijing,shanghai"
-# Usage: python pipeline.py -s "meituan" -r "4"  run it every 4 hours
-if __name__ == "__main__":
-	options, arg = getopt.getopt(sys.argv[1:], "s:c:r:", ["source=", "citylist=", "repeat="])
-	source   = None
-	citylist = None
-	period   = None
-	for opt in options:
-		if opt[0] == "-s": source = opt[1]
-		elif opt[0] == "-c": citylist = opt[1]
-		elif opt[0] == "-r": period = opt[1]
-
-	if  source:
+def main(source_, citylist_, period_):
+	source = source_
+	citylist = citylist_
+	period = period_
+	if source:
 		source = source.split(",")
 		print "source: ", source
-	if  citylist:
+	if citylist:
 		citylist = citylist.split(",")
 		print "city list: ", citylist
 
@@ -262,6 +252,21 @@ if __name__ == "__main__":
 				break
 		if stop_crawl == 1:
 			break
+
+# Usage: python pipeline.py -s "meituan,dida,wowo"
+# Usage: python pipeline.py -s "meituan" -c "beijing,shanghai"
+# Usage: python pipeline.py -s "meituan" -r "4"  run it every 4 hours
+if __name__ == "__main__":
+	options, arg = getopt.getopt(sys.argv[1:], "s:c:r:", ["source=", "citylist=", "repeat="])
+	source   = None
+	period   = None
+	citylist = None
+	for opt in options:
+		if opt[0] == "-s": source = opt[1]
+		elif opt[0] == "-c": citylist = opt[1]
+		elif opt[0] == "-r": period = opt[1]
+
+	main(source, citylist, period)
 
 
 

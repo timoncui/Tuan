@@ -63,6 +63,8 @@ pipeline_sources = []
 # try to log which cities the crawler fails to fetch
 # source: where the deal comes from, e.g. meituan, nuomi, etc.
 def log_result(source):
+	global error_cities
+	global error_messages
 	log_folder_name = os.path.join("log", source)
 	LA_local_t = datetime.datetime.now()
 	filename = [str(LA_local_t.year), str(LA_local_t.month), str(LA_local_t.day)]
@@ -79,6 +81,7 @@ def log_result(source):
 		logging.info("SUCCESS")
 
 def report_errors():
+	global pipeline_sources
 	print "================================================="
 	print "==================REPORT ERRORS=================="
 	print "================================================="
@@ -91,6 +94,8 @@ def report_errors():
 		log_result(source)
 
 def _handle_response(data, response):
+	global error_cities
+	global error_messages
 	source = data["source"]
 	city = data["city"]
 	if response.error:
@@ -188,20 +193,12 @@ class AsyncPipeline:
 
 		report_errors()
 
-# Usage: python async_pipeline.py -s "meituan"
-# Usage: python async_pipeline.py -s "meituan" -c "beijing,tianjin"
-# Usage: python async_pipeline.py -s "meituan" -r "4"  run it every 4 hours
-if __name__ == "__main__":
-	options, arg = getopt.getopt(sys.argv[1:], "s:c:r:", ["source=", "citylist=", "repeat="])
-	source = None
-	citylist = None
-	period = None
-
-	for opt in options:
-		if opt[0] == "-s": source = opt[1]
-		elif opt[0] == "-c": citylist = opt[1]
-		elif opt[0] == "-r": period = opt[1]
-
+def main(source_, citylist_, period_):
+	global error_cities
+	global error_messages
+	source = source_
+	citylist = citylist_
+	period = period_
 	if source:
 		source = source.split(",")
 		print "source: ", source
@@ -217,7 +214,7 @@ if __name__ == "__main__":
 			break
 
 		# rescue
-		if  len(error_cities) > 0:
+		if len(error_cities) > 0:
 			for src in error_cities.iterkeys():
 				print "Try to rescue", src
 				remain_cities = error_cities[src]
@@ -251,6 +248,21 @@ if __name__ == "__main__":
 				break
 		if stop_crawl == 1:
 			break
+
+# Usage: python async_pipeline.py -s "meituan"
+# Usage: python async_pipeline.py -s "meituan" -c "beijing,tianjin"
+# Usage: python async_pipeline.py -s "meituan" -r "4"  run it every 4 hours
+if __name__ == "__main__":
+	options, arg = getopt.getopt(sys.argv[1:], "s:c:r:", ["source=", "citylist=", "repeat="])
+	source   = None
+	period   = None
+	citylist = None
+	for opt in options:
+		if opt[0] == "-s": source = opt[1]
+		elif opt[0] == "-c": citylist = opt[1]
+		elif opt[0] == "-r": period = opt[1]
+
+	main(source, citylist, period)
 
 
 
