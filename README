@@ -1,3 +1,6 @@
 Note:
 manzuo.com and ftuan.com do not have shop information.
 58.com does not have shop info as well... although it has shop address, but it's pretty vague.
+
+to crawl deal information from lashou.com, python pipeline.py -s lashou
+for other websites, we can use python async_pipeline.py -s meituan

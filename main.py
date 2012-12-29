@@ -28,3 +28,7 @@ duration = end_time - start_time
 print "====================="
 print "The task takes", duration.seconds, "seconds to finish"
 print "====================="
+
+fhandler = open("finish_log.txt", "a")
+fhandler.write(str(duration.seconds) + "\n")
+fhandler.close()
