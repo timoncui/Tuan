@@ -21,7 +21,7 @@ from manzuo_parse import ManzuoParser
 from wuba_crawl import WubaCrawler
 from wuba_parse import WubaParser
 
-from carrier import Carrier
+#from carrier import Carrier
 from archiver import Archiver
 from check_config import CheckConfig
 
@@ -37,7 +37,7 @@ class Pipeline:
 	def __init__(self, crawler, parser, carrier, source):
 		self.crawler = crawler
 		self.parser  = parser
-		self.carrier = carrier
+	#	self.carrier = carrier
 		self.source  = source
 
 	# try to log which cities the crawler fails to fetch
