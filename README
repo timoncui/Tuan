@@ -4,3 +4,7 @@ manzuo.com and ftuan.com do not have shop information.
 
 to crawl deal information from lashou.com, python pipeline.py -s lashou
 for other websites, we can use python async_pipeline.py -s meituan
+
+Run the data collection and analysis pipeline:
+python main.py
+To end the process, create a file under the current directory called "main_term_sig"
