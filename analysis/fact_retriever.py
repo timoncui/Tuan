@@ -4,6 +4,10 @@
 # @time: 12/30/2012
 
 from s3retriever import S3Retriever
+import os
+import sys
+import getopt
+import redis
 
 class FactRetriever:
 	def __init__(self):
@@ -40,7 +44,7 @@ class FactRetriever:
 						data[tokens[0].strip()] = [tokens[1].strip(), tokens[2].strip(), tokens[3].strip(), tokens[4].strip(), tokens[5].strip()]
 					except Exception, e:
 						continue
-				return data
+				return [data, filename]
 			elif fact_name == "deal":
 				data = []
 				file_key_prefix = "_".join([fact_name, source, year, month, day])
@@ -60,7 +64,7 @@ class FactRetriever:
 						except Exception, e:
 							continue
 					data.append(deal_data)
-				return data
+				return [data, filenames]
 			elif fact_name == "deal_number":
 				data = []
 				file_key_prefix = "_".join([fact_name, source, year, month, day])
@@ -85,34 +89,56 @@ class FactRetriever:
 						except Exception, e:
 							continue
 					data.append(deal_num_data)
-				return data
+				return [data, filenames]
 			else:
 				print fact_name, "is not valid right now"
 				return None
 		except Exception, e:
 			print "Error: FactRetriever retrieve", str(e)
 
-	def print_data(self, data, fact_name):
-		if fact_name == "shop":
-			for shop_key in data:
-				print shop_key, data[shop_key][0], data[shop_key][1], data[shop_key][2], data[shop_key][3], data[shop_key][4]
-		elif fact_name == "deal":
-			for entry in data:
-				for deal_key in entry:
-					print deal_key, entry[deal_key][0], entry[deal_key][1]
-		elif fact_name == "deal_number":
-			for entry in data:
-				for city_name in entry:
-					print city_name, entry[city_name]
+	def save_to_redis(self, data, fact_name, filenames):
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		if fact_name == "deal_number":
+			for i in range(0, len(filenames)):
+				fileinfo = filenames[i].strip().split("/")[-1]
+				tokens = fileinfo.split("_")
+				source = tokens[2]
+				date = "_".join(tokens[3:])
+				for city in data[i]:
+					redis_key = "deal_number:" + source + ":" + city.decode('utf8') + ":" + date
+					if not r.exists(redis_key):
+						redis_val = data[i][city]
+						r.set(redis_key, redis_val)
+
+	def snapshot_redis(self):
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		print "save db to disk..."
+		r.save()
+		print "saved!"
 
 if __name__ == "__main__":
-	fact_name = "deal"
-	source = "meituan"
-	year = "2012"
-	month = "12"
-	day = "30"
-	fact_retriever = FactRetriever()
-	data = fact_retriever.retrieve(source, fact_name, year, month, day)
-	fact_retriever.print_data(data, fact_name)
+	year  = None
+	month = None
+	day   = None
 
+	options, arg = getopt.getopt(sys.argv[1:], "y:m:d:", ["year=", "month=", "day="])
+	for opt in options:
+		if opt[0] == "-y": year = opt[1]
+		elif opt[0] == "-m": month = opt[1]
+		elif opt[0] == "-d": day = opt[1]
+
+	fact_names = ["deal_number"]
+	sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
+	print year, month, day
+
+	if year and month and day:
+		fact_retriever = FactRetriever()
+		for fact_name in fact_names:
+			for source in sources:
+				result = fact_retriever.retrieve(source, fact_name, year, month, day)
+				if not result:
+					continue
+				data, filenames = result
+				fact_retriever.save_to_redis(data, fact_name, filenames)
+		fact_retriever.snapshot_redis()
 

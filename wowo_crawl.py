@@ -11,8 +11,8 @@ import xml.etree.ElementTree as ET
 
 class WowoCrawler:
 	def __init__(self):
-		self.url_deal = "http://www.55tuan.com/openAPI.do?city="
-		self.url_city_list = "http://www.55tuan.com/city.xml"
+		self.url_deal = "http://www.55tuan.com/partner/partnerApi?partner=wowo&city="
+		self.url_city_list = "http://www.55tuan.com/partner/city/wowoCity.xml"
 		self.user_agent = "Chrome/22.0.1229.94"
 		self.data_store = "wowo"
 
