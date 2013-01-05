@@ -1,5 +1,5 @@
 # wrapper of s3retriever.py
-# retrieve deal facts from s3
+# retrieve deal facts from s3 and save data to redis db
 # @author: Lixing Huang
 # @time: 12/30/2012
 
@@ -99,6 +99,7 @@ class FactRetriever:
 	def save_to_redis(self, data, fact_name, filenames):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		if fact_name == "deal_number":
+			# key scheme:  deal_number:meituan:city_name_zh:2012_12_31_9
 			for i in range(0, len(filenames)):
 				fileinfo = filenames[i].strip().split("/")[-1]
 				tokens = fileinfo.split("_")
@@ -109,6 +110,8 @@ class FactRetriever:
 					if not r.exists(redis_key):
 						redis_val = data[i][city]
 						r.set(redis_key, redis_val)
+					else:
+						print redis_key, r.get(redis_key)
 
 	def snapshot_redis(self):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
