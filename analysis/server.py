@@ -7,6 +7,7 @@ import tornado.options
 import tornado.web
 from tornado.options import define, options
 from DealnumHandler import DealnumHandler
+from SalesHandler import SalesHandler
 
 define("port", default=8483, type=int)
 
@@ -15,6 +16,7 @@ class Application(tornado.web.Application):
 		handlers = [
 			(r"/", DealnumHandler),
 			(r"/dealnum", DealnumHandler),
+			(r"/sales", SalesHandler),
 		]
 
 		settings = dict(

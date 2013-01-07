@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#-*- coding: utf-8 -*-
 
 import os
 import json
@@ -8,29 +7,13 @@ import tornado.web
 import redis
 import calendar
 
-class DealnumHandler(tornado.web.RequestHandler):
+class SalesHandler(tornado.web.RequestHandler):
 	def initialize(self):
 		self.redis_port = 6379
 		self.redis_db = 0
 
 	def get(self):
-		self.render("deal_num.html", page="dealnum")
-
-	def _load_city_list(self):
-		try:
-			city_list = []
-			print "loading city list..."
-			fhandler = open("../city_list", "r")
-			lines = fhandler.readlines()
-			fhandler.close()
-			print "city list loaded!"
-			for line in lines:
-				city_name = line.strip().split("\t")[1]
-				city_list.append(city_name.strip())
-			return city_list
-		except Exception, e:
-			print "DealnumHandler _load_city_list", str(e)
-			return []
+		self.render("deal_num.html", page="sales")
 
 	def _incr_date(self, y, m, d):
 		day = []
@@ -47,10 +30,7 @@ class DealnumHandler(tornado.web.RequestHandler):
 
 	def post(self):
 		type = self.get_argument("type", None)
-		if type == "citylist":
-			city_list = self._load_city_list()
-			self.write(json.dumps(city_list))
-		elif type == "num":
+		if type == "num":
 			city = self.get_argument("city",None)
 			srcs = self.get_argument("src", None)
 			beg  = self.get_argument("beg", None)
@@ -79,7 +59,7 @@ class DealnumHandler(tornado.web.RequestHandler):
 				while True:
 					for h in xrange(0,24):
 						date = "_".join([str(_beg_y), str(_beg_m), str(_beg_d), str(h)])
-						redis_key = "deal_number:" + src + ":" + city + ":" + date
+						redis_key = "sales:" + src + ":" + city + ":" + date
 						key_list.append(redis_key)
 					_beg_y, _beg_m, _beg_d = self._incr_date(_beg_y, _beg_m, _beg_d)
 					if (_beg_y>end_y) or (_beg_y==end_y and _beg_m>end_m) or (_beg_y==end_y and _beg_m==end_m and _beg_d>end_d):
@@ -101,5 +81,7 @@ class DealnumHandler(tornado.web.RequestHandler):
 					else:
 						result[source] = [ [date], [val_list[i]] ]
 			self.write(json.dumps(result))
+
+
 
 

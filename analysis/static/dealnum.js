@@ -157,7 +157,7 @@ function constructYLabels(dat) {
 		}
 	}
 	var hn_max = 10;
-	var interval_set = [50,100,200,500,1000,2000,5000,10000,20000,50000];
+	var interval_set = [50,100,200,500,1000,2000,5000,10000,20000,50000,100000,500000,1000000,5000000,10000000];
 	var selected_interval = 0;
 	// the max value can be (hn+1)*interval. hn is the number of horizontal lines.
 	// find the best interval.
@@ -284,8 +284,9 @@ function query() {
 		return;
 	}
 
+	page = $("#search").attr("page");
 	$.post(
-		base_url + "dealnum",
+		base_url + page,
 		"type=num&city=" + g_selected_city + "&src=" + $sources + "&beg=" + starttime + "&end=" + endtime,
 		function(dat) {
 			if (isObjEmpty(dat)) {

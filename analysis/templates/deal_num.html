@@ -1,6 +1,13 @@
 <html>
 
 <head>
+	<title>
+		{% if page == 'sales' %}
+			{{ escape("销售量比较") }}
+		{% elif page == 'dealnum' %}
+			{{ escape("团购数量比较") }}
+		{% end %}
+	</title>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="{{ static_url("raphael.js") }}"></script>
@@ -45,7 +52,11 @@
 <body>
 	<div style="width:100%;font-size:20px">
 		<center>
-			团购数量查询
+			{% if page == 'sales' %}
+				{{ escape("销售量比较") }}
+			{% elif page == 'dealnum' %}
+				{{ escape("团购数量比较") }}
+			{% end %}
 		</center>
 	</div>
 	<div id="left">
@@ -60,7 +71,7 @@
 			<span class="separator">|</span>
 			终止时间
 			<input type="text" id="endtime"></input>
-			<input type="button" id="search" value="查询" size="100" style="margin-left:50px"></input>
+			<input type="button" id="search" value="查询" page={{page}} size="100" style="margin-left:50px"></input>
 			</div>
 		</div>
 		<div id="paper" style="margin-top:10px;border-bottom:1px solid #CCC;border-top:1px solid #CCC;height:70%">

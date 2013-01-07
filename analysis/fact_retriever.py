@@ -12,6 +12,8 @@ import redis
 class FactRetriever:
 	def __init__(self):
 		try:
+			self.redis_port = 6379
+			self.redis_db = 0
 			self.s3 = S3Retriever()
 		except Exception, e:
 			pass
@@ -97,7 +99,7 @@ class FactRetriever:
 			print "Error: FactRetriever retrieve", str(e)
 
 	def save_to_redis(self, data, fact_name, filenames):
-		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		r = redis.StrictRedis(host='localhost', port=self.redis_port, db=self.redis_db)
 		if fact_name == "deal_number":
 			# key scheme:  deal_number:meituan:city_name_zh:2012_12_31_9
 			for i in range(0, len(filenames)):
@@ -119,6 +121,7 @@ class FactRetriever:
 		r.save()
 		print "saved!"
 
+# python fact_retriever.py -y 2012 -m 12 -d 30
 if __name__ == "__main__":
 	year  = None
 	month = None
@@ -130,7 +133,7 @@ if __name__ == "__main__":
 		elif opt[0] == "-m": month = opt[1]
 		elif opt[0] == "-d": day = opt[1]
 
-	fact_names = ["deal_number"]
+	fact_names = ["deal_number", "deal", "shop"]
 	sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
 	print year, month, day
 
@@ -141,7 +144,7 @@ if __name__ == "__main__":
 				result = fact_retriever.retrieve(source, fact_name, year, month, day)
 				if not result:
 					continue
-				data, filenames = result
-				fact_retriever.save_to_redis(data, fact_name, filenames)
-		fact_retriever.snapshot_redis()
+			#	data, filenames = result
+			#	fact_retriever.save_to_redis(data, fact_name, filenames)
+	#	fact_retriever.snapshot_redis()
 
