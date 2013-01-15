@@ -1,29 +1,67 @@
 // @author Lixing Huang
-// @date 1/3/2013
+// @date 1/14/2013
 
 // global variables
 g_selected_city = null;
+g_selected_shop = null;
 g_max_days = 30;
+g_cache_dat = null;
 
 // google table api
+g_shop_table = null;
+function loadShopList(city_name) {
+	var ww = $("#shop_box").width();
+	if (city_name == null) {
+		var shop_data = new google.visualization.DataTable();
+		shop_data.addRows(0);
+		shop_data.addColumn("string", "商店名");
+		g_shop_table.draw(shop_data, {showRowNumber:true, height:"700px", width:ww});
+	} else {
+		$.post(
+			base_url + "shop",
+			"type=shoplist&city=" + city_name,
+			function(dat) {
+				var shop_data = new google.visualization.DataTable();
+				shop_data.addColumn("string", "商店名");
+				shop_data.addRows(dat.length);
+				for (i=0; i<dat.length; ++i) {
+					shop_data.setCell(i, 0, dat[i]);
+				}
+				if (g_shop_table == null) {
+					g_shop_table = new google.visualization.Table(document.getElementById('shop_box'));
+					google.visualization.events.addListener(g_shop_table, 'select', function(){
+						var selection = g_shop_table.getSelection();
+						if (selection.length == 0) {
+							g_selected_shop = null;
+						} else if (selection.length > 1) {
+							alert("抱歉，目前只能选择一个商店");
+							g_selected_shop = null;
+						} else {
+							g_selected_shop = shop_data.getFormattedValue(selection[0].row, 0);
+						}
+					});
+				}
+				g_shop_table.draw(shop_data, {showRowNumber:true, height:"700px", width:ww});
+			},
+			"json"
+		);
+	}
+}
+
 function loadCityList() {
 	$.post(
 		base_url + "dealnum",
 		"type=citylist",
 		function(dat) {
-			var ww = $("#city_box").width();
 			var city_data = new google.visualization.DataTable();
 			city_data.addColumn("string", "城市名");
-			city_data.addRows(dat.length + 1);
-			city_data.setCell(0, 0, "全部");
+			city_data.addRows(dat.length);
 			for (i=0; i<dat.length; i++) {
-				city_data.setCell(i+1, 0, dat[i]);
+				city_data.setCell(i, 0, dat[i]);
 			}
 			var city_table = new google.visualization.Table(document.getElementById('city_box'));
-			city_table.draw(city_data, {showRowNumber:true, height:"700px", width:ww});
-			// preselect city
-			city_table.setSelection([{row:3, column:null}]);
-			g_selected_city = city_data.getFormattedValue(city_table.getSelection()[0].row, 0);
+			city_table.draw(city_data, {showRowNumber:true, height:"700px", width:$("#city_box").width()});
+
 			google.visualization.events.addListener(city_table, 'select', function(){
 				var selection = city_table.getSelection();
 				if (selection.length == 0) {
@@ -32,12 +70,9 @@ function loadCityList() {
 					alert("抱歉，目前只能选择一个城市");
 					g_selected_city = null;
 				} else {
-					if (selection[0].row == 0) {
-						g_selected_city = "total";
-					} else {
-						g_selected_city = city_data.getFormattedValue(selection[0].row, 0);
-					}
+					g_selected_city = city_data.getFormattedValue(selection[0].row, 0);
 				}
+				loadShopList(g_selected_city);
 			});
 		},
 		"json"
@@ -49,9 +84,7 @@ google.setOnLoadCallback(function(){
 	loadCityList()
 });
 
-/////////////////////////////
 // data visualization
-// x is fixed. display one month day.
 function constructXLabels(y, m, d, vn) {
 	var x_labels = [];
 	var days_of_month = [];
@@ -70,14 +103,14 @@ function constructXLabels(y, m, d, vn) {
 	}
 	return x_labels;
 }
-// y is dynamic. adjust based on the max value.
 function constructYLabels(dat, accumulate_y) {
 	var y_labels= [];
 	var min_num = 100000000;
 	var max_num = 0;
+
 	for (key in dat) {
 		var total = 0;
-		var n = dat[key][1];
+		var n = dat[key][2];  // sales number
 		for (i=0; i<n.length; ++i) {
 			var nn = parseInt(n[i]);
 			if (nn < min_num)
@@ -91,8 +124,9 @@ function constructYLabels(dat, accumulate_y) {
 				max_num = total;
 		}
 	}
+
 	var hn_max = 10;
-	var interval_set = [50,100,200,500,1000,2000,5000,10000,20000,50000,100000,500000,1000000,5000000,10000000,20000000,50000000];
+	var interval_set = [1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000];
 	var selected_interval = 0;
 	// the max value can be (hn+1)*interval. hn is the number of horizontal lines.
 	// find the best interval.
@@ -131,7 +165,7 @@ function draw(dat, accumulate_y) {
 		var x = [];
 		var y = [];
 		var t = dat[key][0];
-		var n = dat[key][1];
+		var n = dat[key][2];
 		for (i=0; i<t.length; ++i) {
 			var curr = parse_date_hour(t[i], "_");
 			if (curr == null)
@@ -154,7 +188,6 @@ function draw(dat, accumulate_y) {
 	}
 }
 
-///////////////////
 // data interaction
 function validate_dates(starttime, endtime) {
 	var beg = parse_date(starttime, "-");
@@ -177,20 +210,11 @@ function validate_dates(starttime, endtime) {
 	else
 		return false;
 }
-
 function query() {
-	// selected city
-	if (g_selected_city == null)
+	if (g_selected_city == null || g_selected_shop == null) {
 		return;
-	// selected deal source
-	$sources = "";
-	$checked = $("#source_box input:checked");
-	for (i=0; i<$checked.length; i++) {
-		$sources = $sources + $($checked[i]).attr("id") + ",";
 	}
-	if ($sources == "")
-		return;
-	// selected date
+
 	var starttime = $("#starttime").val();
 	var endtime = $("#endtime").val()
 	if (!validate_dates(starttime, endtime)) {
@@ -198,27 +222,25 @@ function query() {
 		return;
 	}
 
-	page = $("#search").attr("page");
 	$.post(
-		base_url + page,
-		"type=num&city=" + g_selected_city + "&src=" + $sources + "&beg=" + starttime + "&end=" + endtime,
+		base_url + "shop",
+		"type=num&city=" + g_selected_city + "&shop=" + g_selected_shop + "&beg=" + starttime + "&end=" + endtime,
 		function(dat) {
 			if (isObjEmpty(dat)) {
 				return;
 			}
-			// for current design:
-			// dat is a hash table, key is source, value is an array with two arrays as elements; the first array is
-			// date description, and the second array is deal number
-			if (page == 'dealnum')
-				draw(dat, false);
-			else if (page == 'sales')
-				draw(dat, true);
+			g_cache_dat = dat;
+			draw(dat, true);
+			// check the source selector
+			$("input:checkbox").attr("disabled", "disabled").removeAttr("checked");
+			for (var key in dat) {
+				$("#" + key).attr("checked", "checked").removeAttr("disabled");
+			}
 		},
 		"json"
 	);
 }
 
-///////////////////
 // entry point
 $(document).ready(function(){
 	// get current date
@@ -229,9 +251,6 @@ $(document).ready(function(){
 	$("#starttime").val(y+"-"+m+"-"+d);
 	$("#endtime").val(y+"-"+m+"-"+d);
 
-	// check meituan
-	$("#meituan").attr("checked", "checked");
-
 	// prepare the canvas
 	var w = $("#canvas").width();
 	var h = $("#canvas").height();
@@ -241,4 +260,25 @@ $(document).ready(function(){
 	$("#search").click(function(){
 		query();
 	});
+
+	// disable check box
+	$("input:checkbox").change(function(evt){
+		var tmp = {};
+		var checked = $("#source_box input:checked");
+		for (i=0; i<checked.length; ++i) {
+			var src = $(checked[i]).attr("id");
+			if (g_cache_dat[src]) {
+				tmp[src] = g_cache_dat[src];
+			}
+		}
+		draw(tmp, true);
+	});
 });
+
+
+
+
+
+
+
+

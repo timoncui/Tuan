@@ -27,6 +27,7 @@ class Sales:
 		except Exception, e:
 			print "sales.py __init__", str(e)
 
+	# return a dict, the key is deal_id, and the value is [price, sales_num]
 	def _parse(self, filename):
 		try:
 			deal_data = dict()
@@ -54,6 +55,35 @@ class Sales:
 			print "sales.py _parse", filename, str(e)
 			return None
 
+	# parse the deal data, and save it to redis
+	# source:deal_id -> [date,price,sales,date,price,sales,...]
+	def parse_and_save_to_redis(self, filename):
+		source = filename.split("_")[1]
+		date = "_".join(filename.split("_")[2:])
+		try:
+			r = redis.StrictRedis(host='localhost', port=self.redis_port, db=self.redis_db)
+			deal_data = self._parse(os.path.join('temp', filename))
+			for deal_id in deal_data:
+				redis_key = "deal:" + source + ":" + deal_id
+				price = str(deal_data[deal_id][0])
+				sales = str(deal_data[deal_id][1])
+				redis_val_fld = date
+				redis_val_val = price + ";" + sales
+				r.hsetnx(redis_key, redis_val_fld, redis_val_val)
+		except Exception, e:
+			print "Sales parse_and_save_to_redis", str(e)
+
+	def process_deal_files_of_date(self, source, year, month, day):
+		curr_hour = 23
+		while curr_hour >= 0:
+			deal_filename = "_".join(['deal', source, str(year), str(month), str(day), str(curr_hour)])
+			deal_filepath = os.path.join('temp', deal_filename)
+			if os.path.exists(deal_filepath):
+				print "processing", deal_filepath
+				self.parse_and_save_to_redis(deal_filename)
+			curr_hour = curr_hour - 1
+
+	# compare the sales number in the two files, and calculate the sales
 	def _calc(self, curr_filename, prev_filename):
 		try:
 			global_deal_set = set()
@@ -85,10 +115,8 @@ class Sales:
 				city_idx  = deal_id.split("_")[0]
 				if city_idx in self.city_index:
 					city_name = self.city_index[city_idx]
-					if city_name not in sales_data:
-						sales_data[city_name] = amount
-					else:
-						sales_data[city_name] = sales_data[city_name] + amount
+					if city_name not in sales_data: sales_data[city_name] = amount
+					else: sales_data[city_name] = sales_data[city_name] + amount
 				else:
 					print deal_id, "has an invalid city index"
 			return sales_data
@@ -207,6 +235,7 @@ if __name__ == "__main__":
 			sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
 			for source in sources:
 				app.calc(source, year, month, day)
+				app.process_deal_files_of_date(source, year, month, day)
 			app.snapshot_redis()
 		except Exception, e:
 			print "sales.py", str(e)

@@ -1,9 +1,15 @@
 var base_url = "http://localhost:8483/"
 
 var g_palette = {
-	'dida':'#0066cc', 'dianping':'#ff6600', 'ftuan':'#83b34d',
-	'lashou':'#eb4800', 'manzuo':'#dff1fe', 'meituan':'#0a9e9d',
-	'nuomi':'#ec3a6a', 'wowo':'#ff8000', 'wuba':'#d95f00',
+	'dida'    : '#0066cc',
+	'dianping': '#ff6600',
+	'ftuan'   : '#83b34d',
+	'lashou'  : '#eb4800',
+	'manzuo'  : '#dff1fe',
+	'meituan' : '#0a9e9d',
+	'nuomi'   : '#ec3a6a',
+	'wowo'    : '#ff8000',
+	'wuba'    : '#d95f00',
 };
 
 function isObjEmpty(obj) {
