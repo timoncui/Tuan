@@ -144,7 +144,7 @@ if __name__ == "__main__":
 				result = fact_retriever.retrieve(source, fact_name, year, month, day)
 				if not result:
 					continue
-			#	data, filenames = result
-			#	fact_retriever.save_to_redis(data, fact_name, filenames)
-	#	fact_retriever.snapshot_redis()
+				data, filenames = result
+				fact_retriever.save_to_redis(data, fact_name, filenames)
+		fact_retriever.snapshot_redis()
 

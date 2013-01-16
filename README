@@ -8,3 +8,11 @@ for other websites, we can use python async_pipeline.py -s meituan
 Run the data collection and analysis pipeline:
 python main.py
 To end the process, create a file under the current directory called "main_term_sig"
+
+----
+python fact_retriever.py -y 2013 -m 1 -d 1  # retrieve data from s3
+python sales.py -y 2013 -m 1 -d 1  # calculates the sales information
+python shop_analysis.py -y 2013 -m 1 -d 1  # calculates the shop information
+
+----
+python category_analysis.py -y 2013 -m 1 -d 1  # calculates the number of categories
