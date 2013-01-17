@@ -96,7 +96,7 @@ function _drawline(source, x, y, xlabels, ylabels) {
 		}
 		g_paper_plots.push(cc);
 	}
-	var l = g_paper["p"].path(str).attr({"stroke":g_palette[source]});
+	var l = g_paper["p"].path(str).attr({"stroke":g_palette[source],"stroke-width":"3"});
 	g_paper_plots.push(l);
 }
 

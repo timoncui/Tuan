@@ -1,0 +1,57 @@
+<html>
+
+<head>
+	<title>团购种类</title>
+  	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  	<script type="text/javascript" src="{{ static_url("global.js") }}"></script>
+  	<script type="text/javascript" src="{{ static_url("category.js") }}"></script>
+  	<style>
+  		html { height: 100% }
+    	body {
+      		height: 100%;
+      		margin: 0;
+      		padding: 0;
+      		font-family:"Abadi MT W02 Exra Light","HelveticaNeueW01-45Ligh","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
+    	}
+    	#left {
+    		float:left;
+    		height:100%;
+    		width:10%;
+    		border:1px solid #CCC;
+    		margin-right:5px;
+    	}
+    	#mid {
+    		float:left;
+    		height:100%;
+    		width:15%;
+    		border:1px solid #CCC;
+    		margin-right:5px;
+    	}
+    	#paper {
+    		float:left;
+    		height:100%;
+    		width:70%;
+    		border:1px solid #CCC;
+    	}
+  	</style>
+</head>
+
+<body>
+	<div style="width:100%;font-size:20px;margin-bottom:10px">
+    	<center>
+    		团购种类
+    	</center>
+  	</div>
+	<div id="left">
+		<div id="source_box"></div>
+	</div>
+	<div id="mid">
+		<div id="cat_box"></div>
+	</div>
+	<div id="paper">
+		<div id="canvas" style="height:100%;width:100%"></div>
+	</div>
+</body>
+
+</html>

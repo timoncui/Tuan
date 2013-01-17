@@ -63,7 +63,7 @@ class CategoryCount:
 			parser = self.parser_factory.get_parser(source)
 			parser.parse(filepath)
 			for deal in parser.deals:
-				if deal["deal_cate"]:
+				if ("deal_cate" in deal) and deal["deal_cate"]:
 					category = deal["deal_cate"].strip().encode('utf-8')
 					self._incr_val_of_key(self.category_count, category)
 				#	self._incr_val_of_key(self.local_category_count, category)
@@ -157,6 +157,8 @@ if __name__ == "__main__":
 		sources = ["dianping", "dida", "ftuan", "lashou", "manzuo", "meituan", "nuomi", "wowo", "wuba"]
 		retriever = DataRetriever('lixing-tuan-usstandard')
 		for source in sources:
+			#if source != "wowo":
+			#	continue
 			for cityname in os.listdir(source):
 				if cityname == "." or cityname == ".." or cityname == "city_list":
 					continue

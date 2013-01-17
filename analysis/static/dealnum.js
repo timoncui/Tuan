@@ -226,7 +226,7 @@ $(document).ready(function(){
 	var y = date.getFullYear();
 	var m = date.getMonth() + 1;
 	var d = date.getDate();
-	$("#starttime").val(y+"-"+m+"-"+d);
+	$("#starttime").val("2012-12-30");
 	$("#endtime").val(y+"-"+m+"-"+d);
 
 	// check meituan

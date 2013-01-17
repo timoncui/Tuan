@@ -2,15 +2,24 @@ var base_url = "http://localhost:8483/"
 
 var g_palette = {
 	'dida'    : '#0066cc',
-	'dianping': '#ff6600',
+	'dianping': '#ff0000',
 	'ftuan'   : '#83b34d',
-	'lashou'  : '#eb4800',
-	'manzuo'  : '#dff1fe',
+	'lashou'  : '#c14800',
+	'manzuo'  : '#cc91fe',
 	'meituan' : '#0a9e9d',
-	'nuomi'   : '#ec3a6a',
+	'nuomi'   : '#ee6a6a',
 	'wowo'    : '#ff8000',
-	'wuba'    : '#d95f00',
+	'wuba'    : '#6600ff',
 };
+
+function objSize(obj) {
+	var sz = 0;
+	for (var key in obj) {
+		if (hasOwnProperty.call(obj, key))
+			sz++;
+	}
+	return sz;
+}
 
 function isObjEmpty(obj) {
 	for (var key in obj) {

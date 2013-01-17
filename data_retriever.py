@@ -39,4 +39,5 @@ class DataRetriever:
 
 if __name__ == "__main__":
 	app = DataRetriever('lixing-tuan-usstandard')
-	filelist = app.retrieve('meituan', 'beijing', 2013, 1, 1)
+	filelist = app.retrieve('wowo', 'beijing', 2013, 1, 8)
+	print filelist

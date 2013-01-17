@@ -110,24 +110,25 @@ class ShopAnalyzer:
 				if city_name not in city_count: city_count[city_name] = 1
 				else: city_count[city_name] = city_count[city_name] + 1
 
-		try:
-			r = redis.StrictRedis(host='localhost', port=self.redis_port, db=self.redis_db)
-			for shop_id in shop_with_more_than_one_source:
-				city_number = shop_id.strip().split("_")[0]
-				if city_number in self.city_index:
-					city_name = self.city_index[city_number]
+		if True:  # switch on and off
+			try:
+				r = redis.StrictRedis(host='localhost', port=self.redis_port, db=self.redis_db)
+				for shop_id in shop_with_more_than_one_source:
+					city_number = shop_id.strip().split("_")[0]
+					if city_number in self.city_index:
+						city_name = self.city_index[city_number]
 
-					redis_key = "shops_in_city:" + city_name.decode('utf-8')
-					redis_val = shop_id
-					r.sadd(redis_key, redis_val)
-
-					srcs = shop_set[shop_id]
-					for src in srcs:
-						redis_key = "source_of_shop:" + shop_id
-						redis_val = src
+						redis_key = "shops_in_city:" + city_name.decode('utf-8')
+						redis_val = shop_id
 						r.sadd(redis_key, redis_val)
-		except Exception, e:
-			print "ShopAnalyzer shop_to_source", str(e)
+
+						srcs = shop_set[shop_id]
+						for src in srcs:
+							redis_key = "source_of_shop:" + shop_id
+							redis_val = src
+							r.sadd(redis_key, redis_val)
+			except Exception, e:
+				print "ShopAnalyzer shop_to_source", str(e)
 
 		print len(shop_set)
 		print len(shop_with_more_than_one_source)
