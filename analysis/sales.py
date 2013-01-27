@@ -232,7 +232,8 @@ if __name__ == "__main__":
 			month = int(month)
 			day = int(day)
 			app = Sales()
-			sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
+		#	sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
+			sources = ["dianping", "lashou", "meituan", "manzuo", "nuomi", "wowo"]
 			for source in sources:
 				app.calc(source, year, month, day)
 				app.process_deal_files_of_date(source, year, month, day)

@@ -230,7 +230,7 @@ function query() {
 				return;
 			}
 			g_cache_dat = dat;
-			draw(dat, true);
+			draw(dat, false);
 			// check the source selector
 			$("input:checkbox").attr("disabled", "disabled").removeAttr("checked");
 			for (var key in dat) {

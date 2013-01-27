@@ -134,7 +134,8 @@ if __name__ == "__main__":
 		elif opt[0] == "-d": day = opt[1]
 
 	fact_names = ["deal_number", "deal", "shop"]
-	sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
+#	sources = ["dida", "dianping", "lashou", "ftuan", "meituan", "manzuo", "nuomi", "wowo", "wuba"]
+	sources = ["dianping", "lashou", "meituan", "manzuo", "nuomi", "wowo"]
 	print year, month, day
 
 	if year and month and day:

@@ -87,8 +87,7 @@ class ShopHandler(tornado.web.RequestHandler):
 					for i in xrange(0,len(sales_info)):
 						if beg_date<=sales_info[i][0] and sales_info[i][0]<=end_date:
 							if i>0 and sales_info[i][0]==sales_info[i-1][0]:
-								result[source][1][-1] = result[source][1][-1] + sales_info[i][1]
-								result[source][2][-1] = result[source][2][-1] + sales_info[i][2]
+								result[source][2][-1] = result[source][2][-1] + sales_info[i][2]  # sales number
 							else:
 								result[source][0].append( str(sales_info[i][0].year)+"_"+str(sales_info[i][0].month)+"_"+str(sales_info[i][0].day)+"_"+str(sales_info[i][0].hour) )
 								result[source][1].append( sales_info[i][1] )

@@ -16,3 +16,7 @@ python shop_analysis.py -y 2013 -m 1 -d 1  # calculates the shop information
 
 ----
 python category_analysis.py -y 2013 -m 1 -d 1  # calculates the number of categories
+
+----
+Jan. 27th, 2013
+ignore data from dida, 58, and ftuan.
