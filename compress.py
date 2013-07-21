@@ -5,6 +5,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
 try:
+	# this is crap
 	s3_conn = S3Connection('AKIAISVIMYXGTRTNY6AA', 'LRGG0ihbhZEZ5lopn+ndd7ZduxZWQ/85bX9GVPLo')
 	tuan_bucket = s3_conn.lookup('lixing-tuan-usstandard')
 except Exception, e:
